@@ -38,9 +38,9 @@ public class BogoIMContext : Gtk.IMContext {
 		
 		if (event.keyval == 97) {
 			delete_previous_chars(4);
-			delayed_commit_text = "cool";
+			delayed_commit_text = "bbbb";
 		} else {
-			commit("chin");
+			commit("aaaa");
 		}
 
 		return true;
