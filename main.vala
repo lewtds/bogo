@@ -18,12 +18,18 @@ public class BogoIMContext : Gtk.IMContext {
 		last_event_time = event.time;
 
 		if (event.type == Gdk.EventType.KEY_RELEASE &&
-			event.send_event == 1 &&
-			pending_fake_backspaces == 0 &&
-			delayed_commit_text != "") {
+			event.send_event == 1) { 
 
-			commit(delayed_commit_text);
-			delayed_commit_text = "";
+			debug("fake release");
+
+			if (pending_fake_backspaces == 0 &&
+				delayed_commit_text != "") {
+
+				debug("delayed commit");
+				commit(delayed_commit_text);
+				delayed_commit_text = "";
+			}
+
 			return false;
 		}
 
@@ -32,6 +38,7 @@ public class BogoIMContext : Gtk.IMContext {
 		}
 
 		if (event.send_event == 1) {
+			debug("fake press");
 			pending_fake_backspaces--;
 			return false;
 		}
