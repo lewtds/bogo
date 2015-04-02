@@ -3,7 +3,7 @@ all: build
 NAME=im-bogo
 OUTPUT=${NAME}.so
 VALA_SRC=main.vala module.vala
-VALA_FLAGS=--pkg=gtk+-3.0
+VALA_FLAGS=--pkg=gtk+-2.0
 
 
 build: ${VALA_SRC}
