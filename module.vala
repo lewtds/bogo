@@ -18,7 +18,8 @@ public void im_module_list (out Gtk.IMContextInfo*[] contexts) {
 }
 
 
-// Use [ModuleInit] so that Vala generates code that uses g_type_module_register_type().
+// Use [ModuleInit] so that Vala generates init code that uses
+// g_type_module_register_type().
 // https://mail.gnome.org/archives/vala-list/2008-December/msg00081.html
 [ModuleInit]
 public void im_module_init (TypeModule type_module) {
