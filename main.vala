@@ -17,16 +17,6 @@ public class BogoIMContext : Gtk.IMContext {
 	public override bool filter_keypress(Gdk.EventKey event) {
 		last_event_time = event.time;
 
-		if (event.type == Gdk.EventType.KEY_PRESS &&
-			event.send_event == 1) {
-			debug(@"press fake $(event.time)");
-		}
-
-		if (event.type == Gdk.EventType.KEY_RELEASE &&
-			event.send_event == 1) {
-			debug(@"release fake $(event.time)");
-		}
-
 		if (event.type == Gdk.EventType.KEY_RELEASE &&
 			event.send_event == 1 &&
 			pending_fake_backspaces == 0) {
@@ -40,10 +30,6 @@ public class BogoIMContext : Gtk.IMContext {
 
 		if (event.send_event == 1) {
 			pending_fake_backspaces--;
-
-			if (pending_fake_backspaces == 0) {
-			}
-
 			return false;
 		}
 		
