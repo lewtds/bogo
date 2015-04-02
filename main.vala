@@ -14,7 +14,8 @@ public class BogoIMContext : Gtk.IMContext {
 	public override bool filter_keypress(Gdk.EventKey event) {
 		last_event_time = event.time;
 
-		if (event.type != Gdk.EventType.KEY_PRESS) {
+		if (event.type != Gdk.EventType.KEY_PRESS ||
+			event.send_event == 1) {
 			return false;
 		}
 		
