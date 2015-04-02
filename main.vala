@@ -2,11 +2,11 @@ public class BogoIMContext : Gtk.IMContext {
 	private Gdk.Window client_window;
 	private uint32 last_event_time;
 	private string prgname;
+	private uint pending_fake_backspaces;
 
 	public BogoIMContext() {
 		prgname = Environment.get_prgname();
 		debug("prgname: %s", prgname);
-
 	}
 
 	public override void set_client_window(Gdk.Window window) {
@@ -17,8 +17,33 @@ public class BogoIMContext : Gtk.IMContext {
 	public override bool filter_keypress(Gdk.EventKey event) {
 		last_event_time = event.time;
 
-		if (event.type != Gdk.EventType.KEY_PRESS ||
+		if (event.type == Gdk.EventType.KEY_PRESS &&
 			event.send_event == 1) {
+			debug(@"press fake $(event.time)");
+		}
+
+		if (event.type == Gdk.EventType.KEY_RELEASE &&
+			event.send_event == 1) {
+			debug(@"release fake $(event.time)");
+		}
+
+		if (event.type == Gdk.EventType.KEY_RELEASE &&
+			event.send_event == 1 &&
+			pending_fake_backspaces == 0) {
+			commit("cool");
+			return false;
+		}
+
+		if (event.type != Gdk.EventType.KEY_PRESS) {
+			return false;
+		}
+
+		if (event.send_event == 1) {
+			pending_fake_backspaces--;
+
+			if (pending_fake_backspaces == 0) {
+			}
+
 			return false;
 		}
 		
@@ -26,8 +51,6 @@ public class BogoIMContext : Gtk.IMContext {
 			commit("chin");
 		} else {
 			delete_previous_chars(4);
-
-			commit("cool");
 		}
 
 		return true;
@@ -63,6 +86,8 @@ public class BogoIMContext : Gtk.IMContext {
 		for (int i = 0; i < count; i++) {
 			send_backspace();
 		}
+
+		pending_fake_backspaces += count;
 	}
 	
 	public override void focus_in() {
@@ -91,25 +116,31 @@ public class BogoIMContext : Gtk.IMContext {
 		}
 
 		// Put a key press event into Gdk's event queue
-		var e = (Gdk.EventKey *) new Gdk.Event(Gdk.EventType.KEY_PRESS);
-		e.window = client_window;
-		e.send_event = 1;
-		e.keyval = keysym;
-		e.hardware_keycode = keycode;
-		e.str = "";
-		e.length = 0;
-		e.state = modifiers;
-		e.group = 0;
-		e.is_modifier = 0;
-		e.time = last_event_time + 1;
-
-		((Gdk.Event) e).put();
+		var press_event = (Gdk.EventKey*) new Gdk.Event(Gdk.EventType.KEY_PRESS);
+		press_event.window = client_window;
+		press_event.send_event = 1;
+		press_event.keyval = keysym;
+		press_event.hardware_keycode = keycode;
+		press_event.str = "";
+		press_event.length = 0;
+		press_event.state = modifiers;
+		press_event.group = 0;
+		press_event.is_modifier = 0;
+		press_event.time = last_event_time + 1;
 
 		// And the key release event
-		e.type = Gdk.EventType.KEY_RELEASE;
-		e.state = modifiers | Gdk.ModifierType.RELEASE_MASK;
-		e.time = last_event_time + 2;
+		var release_event = (Gdk.EventKey*) ((Gdk.Event) press_event).copy();
+		release_event.type = Gdk.EventType.KEY_RELEASE;
+		release_event.state = modifiers | Gdk.ModifierType.RELEASE_MASK;
+		release_event.time = last_event_time + 2;
 
-		((Gdk.Event) e).put();
+		// LOL, chromium is so fucked up here
+		if (prgname == "chromium") {
+			((Gdk.Event) release_event).put();
+			((Gdk.Event) press_event).put();
+		} else {
+			((Gdk.Event) press_event).put();
+			((Gdk.Event) release_event).put();
+		}
 	}
 }
