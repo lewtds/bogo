@@ -67,7 +67,7 @@ public class BogoIMContext : Gtk.IMContext {
 			keycode = (uint16) keys[0].keycode;
 		}
 
-		// Send the key press event
+		// Put a key press event into Gdk's event queue
 		var e = (Gdk.EventKey *) new Gdk.Event(Gdk.EventType.KEY_PRESS);
 		e.window = client_window;
 		e.send_event = 1;
