@@ -1,9 +1,12 @@
 public class BogoIMContext : Gtk.IMContext {
 	private Gdk.Window client_window;
 	private uint32 last_event_time;
+	private string prgname;
 
 	public BogoIMContext() {
-		debug("prgname: %s", Environment.get_prgname());
+		prgname = Environment.get_prgname();
+		debug("prgname: %s", prgname);
+
 	}
 
 	public override void set_client_window(Gdk.Window window) {
@@ -22,20 +25,44 @@ public class BogoIMContext : Gtk.IMContext {
 		if (event.keyval != 97) {
 			commit("chin");
 		} else {
-			debug("delete_surrounding()");
-			bool deleted = delete_surrounding(-4, 4);
-
-			if (!deleted) {
-				debug("delete_surrounding() failed. Sending backspaces.");
-				for (int i = 0; i < 4; i++) {
-					send_backspace();
-				}
-			}
+			delete_previous_chars(4);
 
 			commit("cool");
 		}
 
 		return true;
+	}
+
+	private bool is_app_blacklisted() {
+		string[] blacklist = {
+			"firefox"
+		};
+
+		foreach (var name in blacklist) {
+			if (prgname == name) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private void delete_previous_chars(uint count) {
+		if (is_app_blacklisted()) {
+			delete_with_backspace(count);
+		} else {
+			var deleted = delete_surrounding(-(int) count, (int) count);
+			if (!deleted) {
+				debug("delete_surrounding() failed.");
+				delete_with_backspace(count);
+			}
+		}
+	}
+
+	private void delete_with_backspace(uint count) {
+		for (int i = 0; i < count; i++) {
+			send_backspace();
+		}
 	}
 	
 	public override void focus_in() {
