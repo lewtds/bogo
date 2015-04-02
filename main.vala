@@ -23,19 +23,14 @@ public class BogoIMContext : Gtk.IMContext {
 			commit("chin");
 		} else {
 			debug("delete_surrounding()");
+			bool deleted = delete_surrounding(-4, 4);
 
-			fake_key(0xff0d, 0);
-			// for (int i = 0; i < 4; i++) {
-			// 	send_backspace();
-			// }
-			// bool deleted = delete_surrounding(-4, 4);
-
-			// if (!deleted) {
-			// 	debug("delete_surrounding() failed. Sending backspaces.");
-			// 	for (int i = 0; i < 0; i++) {
-			// 		send_backspace();
-			// 	}
-			// }
+			if (!deleted) {
+				debug("delete_surrounding() failed. Sending backspaces.");
+				for (int i = 0; i < 4; i++) {
+					send_backspace();
+				}
+			}
 
 			commit("cool");
 		}
