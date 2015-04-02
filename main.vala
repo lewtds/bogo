@@ -3,6 +3,7 @@ public class BogoIMContext : Gtk.IMContext {
 	private uint32 last_event_time;
 	private string prgname;
 	private uint pending_fake_backspaces;
+	private string delayed_commit_text;
 
 	public BogoIMContext() {
 		prgname = Environment.get_prgname();
@@ -19,8 +20,11 @@ public class BogoIMContext : Gtk.IMContext {
 
 		if (event.type == Gdk.EventType.KEY_RELEASE &&
 			event.send_event == 1 &&
-			pending_fake_backspaces == 0) {
+			pending_fake_backspaces == 0 &&
+			delayed_commit_text != "") {
+
 			commit("cool");
+			delayed_commit_text = "";
 			return false;
 		}
 
@@ -33,10 +37,11 @@ public class BogoIMContext : Gtk.IMContext {
 			return false;
 		}
 		
-		if (event.keyval != 97) {
-			commit("chin");
-		} else {
+		if (event.keyval == 97) {
 			delete_previous_chars(4);
+			delayed_commit_text = "cool";
+		} else {
+			commit("chin");
 		}
 
 		return true;
