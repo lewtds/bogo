@@ -11,7 +11,6 @@ public class BogoIMContext : Gtk.IMContext {
 	}
 
 	public override void set_client_window(Gdk.Window window) {
-		debug("set_client_window()");
 		client_window = window;
 	}
 	
@@ -79,14 +78,6 @@ public class BogoIMContext : Gtk.IMContext {
 		}
 
 		pending_fake_backspaces += count;
-	}
-	
-	public override void focus_in() {
-		debug("focus_in()");
-	}
-
-	public override void focus_out() {
-		debug("focus_out()");
 	}
 
 	private void send_backspace() {
