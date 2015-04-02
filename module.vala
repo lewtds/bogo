@@ -2,7 +2,9 @@
 // life-cycle events of the whole shared module.
 
 public void im_module_list (out Gtk.IMContextInfo*[] contexts) {
-	var context = new Gtk.IMContextInfo() {
+	// FIXME: Potentially dangerous as `context` is created on stack
+	//        and referred to even after this function returns.
+	var context = Gtk.IMContextInfo() {
 		context_id = "bogo",
 		context_name = "Bogo Vietnamese input method",
 		domain = "bogo",
