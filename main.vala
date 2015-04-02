@@ -98,23 +98,23 @@ public class BogoIMContext : Gtk.IMContext {
 		}
 
 		// Put a key press event into Gdk's event queue
-		var press_event = (Gdk.EventKey*) new Gdk.Event(Gdk.EventType.KEY_PRESS);
-		press_event.window = client_window;
-		press_event.send_event = 1;
-		press_event.keyval = keysym;
-		press_event.hardware_keycode = keycode;
-		press_event.str = "";
-		press_event.length = 0;
-		press_event.state = modifiers;
-		press_event.group = 0;
-		press_event.is_modifier = 0;
-		press_event.time = last_event_time + 1;
+		Gdk.EventKey* press_event = (Gdk.EventKey*) new Gdk.Event(Gdk.EventType.KEY_PRESS);
+		press_event->window = client_window;
+		press_event->send_event = 1;
+		press_event->keyval = keysym;
+		press_event->hardware_keycode = keycode;
+		press_event->str = "";
+		press_event->length = 0;
+		press_event->state = modifiers;
+		press_event->group = 0;
+		press_event->is_modifier = 0;
+		press_event->time = last_event_time + 1;
 
 		// And the key release event
-		var release_event = (Gdk.EventKey*) ((Gdk.Event) press_event).copy();
-		release_event.type = Gdk.EventType.KEY_RELEASE;
-		release_event.state = modifiers | Gdk.ModifierType.RELEASE_MASK;
-		release_event.time = last_event_time + 2;
+		Gdk.EventKey* release_event = (Gdk.EventKey*) ((Gdk.Event) press_event).copy();
+		release_event->type = Gdk.EventType.KEY_RELEASE;
+		release_event->state = modifiers | Gdk.ModifierType.RELEASE_MASK;
+		release_event->time = last_event_time + 2;
 
 		// LOL, chromium is so fucked up here
 		if (prgname == "chromium") {
