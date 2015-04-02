@@ -22,7 +22,7 @@ public class BogoIMContext : Gtk.IMContext {
 			pending_fake_backspaces == 0 &&
 			delayed_commit_text != "") {
 
-			commit("cool");
+			commit(delayed_commit_text);
 			delayed_commit_text = "";
 			return false;
 		}
