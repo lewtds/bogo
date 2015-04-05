@@ -13,6 +13,8 @@ public class BogoIMContext : Gtk.IMContext {
 		Python.initialize();
 
 		Python.run_simple_string("print('hello from python')");
+		var module_name = Python.String.from_string("bogo");
+		var module = Python.Import.import(module_name);
 
 		Python.finalize();
 	}
