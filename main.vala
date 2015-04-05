@@ -8,6 +8,13 @@ public class BogoIMContext : Gtk.IMContext {
 	public BogoIMContext() {
 		prgname = Environment.get_prgname();
 		debug("prgname: %s", prgname);
+
+		Python.set_program_name("bogo");
+		Python.initialize();
+
+		Python.run_simple_string("print('hello from python')");
+
+		Python.finalize();
 	}
 
 	public override void set_client_window(Gdk.Window window) {
