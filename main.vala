@@ -45,9 +45,22 @@ public class BogoIMContext : Gtk.IMContext {
 		}
 	}
 
+	~BogoIMContext() {
+		debug("destroyed()");
+	}
+
 	public override void set_client_window(Gdk.Window window) {
 		client_window = window;
 	}
+
+	public override void focus_in() {
+		debug("focus_in()");
+	}
+
+	public override void focus_out() {
+		debug("focus_out()");
+	}
+
 	public override void reset() {
 		debug("reset()");
 
