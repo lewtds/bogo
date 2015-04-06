@@ -76,7 +76,7 @@ public class BogoIMContext : Gtk.IMContext {
     last_event_time = event.time;
 
     if (event.type == Gdk.EventType.KEY_RELEASE &&
-        event.send_event == 1) { 
+        is_fake_event(event)) { 
 
       debug("fake release");
 
@@ -95,7 +95,8 @@ public class BogoIMContext : Gtk.IMContext {
       return false;
     }
 
-    if (event.send_event == 1) {
+    if (is_fake_event(event)) {
+      debug("fake_release");
       pending_fake_backspaces--;
       return false;
     }
@@ -108,6 +109,7 @@ public class BogoIMContext : Gtk.IMContext {
     delete_previous_chars(chars_to_delete);
 		
     if (pending_fake_backspaces > 0 || delayed_commit_text != "") {
+      debug(@"delaying commit($text)");
       delayed_commit_text += text;
     } else {
       debug(@"commit($text)");
@@ -119,7 +121,8 @@ public class BogoIMContext : Gtk.IMContext {
 
   private bool is_app_blacklisted() {
     string[] blacklist = {
-      "firefox"
+      "firefox",
+      "gnome-shell"
     };
 
     foreach (var name in blacklist) {
@@ -182,7 +185,7 @@ public class BogoIMContext : Gtk.IMContext {
     press_event->hardware_keycode = keycode;
     press_event->str = "";
     press_event->length = 0;
-    press_event->state = modifiers;
+    press_event->state = modifiers | 1 << 25;
     press_event->group = 0;
     press_event->is_modifier = 0;
     press_event->time = last_event_time + 1;
@@ -190,7 +193,7 @@ public class BogoIMContext : Gtk.IMContext {
     // And the key release event
     Gdk.EventKey* release_event = (Gdk.EventKey*) ((Gdk.Event) press_event).copy();
     release_event->type = Gdk.EventType.KEY_RELEASE;
-    release_event->state = modifiers | Gdk.ModifierType.RELEASE_MASK;
+    release_event->state = release_event->state | Gdk.ModifierType.RELEASE_MASK;
     release_event->time = last_event_time + 2;
 
     // LOL, chromium is so fucked up here
@@ -205,5 +208,9 @@ public class BogoIMContext : Gtk.IMContext {
 
   private bool has_delayed_commit() {
     return delayed_commit_text != "";
+  }
+
+  private bool is_fake_event(Gdk.EventKey e) {
+    return (e.state & (1 << 25)) != 0;
   }
 }
