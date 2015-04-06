@@ -28,6 +28,12 @@ public void im_module_init (TypeModule type_module) {
 public void im_module_exit () {
 }
 
-public Gtk.IMContext im_module_create (string context_id) {
-	return new BogoIMContext();
+int count = 0;
+public Gtk.IMContext? im_module_create (string context_id) {
+	debug(@"$context_id requested $count");
+	if (context_id == "bogo") {
+		return new BogoIMContext(count++);
+	}
+
+	return null;
 }

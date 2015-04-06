@@ -14,6 +14,9 @@ namespace Python {
 
 		[CCode (cname = "PyObject_CallObject")]
 		public Object call(Object args);
+
+		[CCode (cname = "Py_BuildValue")]
+		public static Object build_value(string format, ...);
     }
 
 	[CCode (cname = "PyObject")]

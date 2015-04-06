@@ -1,30 +1,44 @@
-[DBus (name = "org.bogo.Server")]
-interface BogoServer : Object {
-	public abstract void process_key(uint keyval,
-									 Gdk.ModifierType modifiers,
-									 out uint chars_to_delete,
-									 out string commit_string,
-									 out bool swallowed) throws IOError;
-}
+namespace Remote {
 
+	[DBus (name = "org.bogo.Server")]
+	interface Server : Object {
+		public abstract int create_input_context() throws IOError;
+	}
+
+	[DBus (name = "org.bogo.InputContext")]
+	interface InputContext : Object {
+		public abstract bool process_key(uint keyval,
+										 Gdk.ModifierType modifiers) throws IOError;
+		public signal void composition_updated(string text, uint chars_to_delete);
+	}
+}
 
 public class BogoIMContext : Gtk.IMContext {
 	private Gdk.Window client_window;
 	private uint32 last_event_time;
 	private string prgname;
 	private uint pending_fake_backspaces;
-	private string delayed_commit_text;
-	private BogoServer server;
+	private string delayed_commit_text = "";
+	private Remote.Server server;
+	private Remote.InputContext input_ctx;
 	private string composition = "";
+	private int id;
 
-	public BogoIMContext() {
+	public BogoIMContext(int id) {
+		this.id = id;
 		prgname = Environment.get_prgname();
 		debug("prgname: %s", prgname);
 
 		try {
 			server = Bus.get_proxy_sync(BusType.SESSION,
 										"org.bogo", "/server");
-			debug("Connected");
+
+		    int ctx_id = server.create_input_context();
+			input_ctx = Bus.get_proxy_sync(BusType.SESSION,
+										   "org.bogo",
+										   "/input_context/42");
+
+			input_ctx.composition_updated.connect(update_composition);
 		} catch (IOError e) {
 			warning("Cannot connect to bogo server");
 		}
@@ -45,7 +59,7 @@ public class BogoIMContext : Gtk.IMContext {
 			if (pending_fake_backspaces == 0 &&
 				delayed_commit_text != "") {
 
-				debug("delayed commit");
+				debug(@"delayed commit: $delayed_commit_text");
 				commit(delayed_commit_text);
 				delayed_commit_text = "";
 			}
@@ -58,37 +72,22 @@ public class BogoIMContext : Gtk.IMContext {
 		}
 
 		if (event.send_event == 1) {
-			debug("fake press");
+			debug(@"$id: fake press");
 			pending_fake_backspaces--;
 			return false;
 		}
 
-		string output = null;
-		uint backspaces;
-		bool swallowed;
-		server.process_key(event.keyval,
-						   event.state,
-						   out backspaces,
-						   out output,
-						   out swallowed);
-
-		if (!swallowed) {
-			return false;
-		} else {
-			update_composition(output);
-			return true;
-		}
+		bool swallowed = input_ctx.process_key(event.keyval, event.state);
+		return swallowed;
 	}
 
-	private void update_composition(string text) {
-		// calculate the difference
-		int diff_count = composition.length;
-
-		delete_previous_chars(diff_count);
+	private void update_composition(string text, uint chars_to_delete) {
+		delete_previous_chars(chars_to_delete);
 		
-		if (pending_fake_backspaces > 0) {
-			delayed_commit_text = text;
+		if (pending_fake_backspaces > 0 || delayed_commit_text != "") {
+			delayed_commit_text += text;
 		} else {
+			debug(@"$id: commit($text)");
 			commit(text);
 		}
 
@@ -139,7 +138,7 @@ public class BogoIMContext : Gtk.IMContext {
 		// Convert keysym to keycode
 		var keymap = Gdk.Keymap.get_default();
 		Gdk.KeymapKey[] keys;
-		keymap.get_entries_for_keyval(0xff08, out keys);
+		keymap.get_entries_for_keyval(keysym, out keys);
 		uint16 keycode = 0;
 
 		if (keys.length > 0) {
