@@ -1,22 +1,33 @@
+[DBus (name = "org.bogo.Server")]
+interface BogoServer : Object {
+	public abstract void process_key(uint keyval,
+									 Gdk.ModifierType modifiers,
+									 out uint chars_to_delete,
+									 out string commit_string,
+									 out bool swallowed) throws IOError;
+}
+
+
 public class BogoIMContext : Gtk.IMContext {
 	private Gdk.Window client_window;
 	private uint32 last_event_time;
 	private string prgname;
 	private uint pending_fake_backspaces;
 	private string delayed_commit_text;
+	private BogoServer server;
+	private string composition = "";
 
 	public BogoIMContext() {
 		prgname = Environment.get_prgname();
 		debug("prgname: %s", prgname);
 
-		Python.set_program_name("bogo");
-		Python.initialize();
-
-		Python.run_simple_string("print('hello from python')");
-		var module_name = Python.String.from_string("bogo");
-		var module = Python.Import.import(module_name);
-
-		Python.finalize();
+		try {
+			server = Bus.get_proxy_sync(BusType.SESSION,
+										"org.bogo", "/server");
+			debug("Connected");
+		} catch (IOError e) {
+			warning("Cannot connect to bogo server");
+		}
 	}
 
 	public override void set_client_window(Gdk.Window window) {
@@ -51,19 +62,37 @@ public class BogoIMContext : Gtk.IMContext {
 			pending_fake_backspaces--;
 			return false;
 		}
-		
-		if (event.keyval == 97) {
-			delete_previous_chars(4);
-			if (pending_fake_backspaces > 0) {
-				delayed_commit_text = "bbbb";
-			} else {
-				commit("bbbb");
-			}
+
+		string output = null;
+		uint backspaces;
+		bool swallowed;
+		server.process_key(event.keyval,
+						   event.state,
+						   out backspaces,
+						   out output,
+						   out swallowed);
+
+		if (!swallowed) {
+			return false;
 		} else {
-			commit("aaaa");
+			update_composition(output);
+			return true;
+		}
+	}
+
+	private void update_composition(string text) {
+		// calculate the difference
+		int diff_count = composition.length;
+
+		delete_previous_chars(diff_count);
+		
+		if (pending_fake_backspaces > 0) {
+			delayed_commit_text = text;
+		} else {
+			commit(text);
 		}
 
-		return true;
+		composition = text;
 	}
 
 	private bool is_app_blacklisted() {

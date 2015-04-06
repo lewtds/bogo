@@ -1,20 +1,18 @@
-all: build 
+all: dirs immodules/im-bogo.so server
 
-NAME=im-bogo
-OUTPUT=${NAME}.so
-VALA_SRC=main.vala module.vala
-VALA_FLAGS=--vapidir=. --pkg=gtk+-2.0 --pkg=python
-
-
-build: ${VALA_SRC}
-	valac ${VALA_FLAGS} -C --library=${NAME} --header=${NAME}.h ${VALA_SRC}
-	gcc main.c module.c --std=c99 `pkg-config --libs --cflags gtk+-2.0 python2` -fPIC -shared -o ${OUTPUT}
+dirs:
 	mkdir -p immodules
-	mv ${OUTPUT} immodules
+
+immodules/im-bogo.so: main.vala module.vala
+	valac -o $@ $^ --library=$* --header=$*.h --pkg=gtk+-2.0 -X -fPIC -X -shared
+
+server: server.vala
+	valac -o $@ $^ --pkg=gdk-2.0 --pkg=python3 --vapidir=. --save-temps
 
 clean:
-	rm -rf immodules/${OUTPUT}
-	rm -rf ${NAME}.vapi
-	rm -rf ${NAME}.h
+	rm -rf server
+	rm -rf immodules/im-bogo.so
+	rm -rf im-bogo.h
+	rm -rf im-bogo.vapi
 
-.PHONY: all build clean
+.PHONY: all dirs clean
