@@ -36,7 +36,7 @@ public class BogoIMContext : Gtk.IMContext {
 		    int ctx_id = server.create_input_context();
 			input_ctx = Bus.get_proxy_sync(BusType.SESSION,
 										   "org.bogo",
-										   "/input_context/42");
+										   @"/input_context/$ctx_id");
 
 			input_ctx.composition_updated.connect(update_composition);
 		} catch (IOError e) {

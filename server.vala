@@ -67,6 +67,7 @@ public class InputContext : Object {
 [DBus (name = "org.bogo.Server")]
 public class Server : Object {
 	private DBusConnection conn;
+	private int context_count = 0;
 
 	public Server(DBusConnection conn) {
 		this.conn = conn;
@@ -74,13 +75,13 @@ public class Server : Object {
 	
 	public int create_input_context() {
 		try {
-			conn.register_object("/input_context/42", new InputContext());
+			conn.register_object(@"/input_context/$context_count",
+								 new InputContext());
+			return context_count++;
 		} catch (IOError e) {
 			stderr.printf(e.message);
-			return 42;
+			return -1;
 		}
-
-		return 42;
 	}
 }
 
