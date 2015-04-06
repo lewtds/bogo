@@ -22,8 +22,7 @@ $ sudo GTK_PATH=$PWD gtk-query-immodules-2.0 --update-cache
 $ GTK_IM_MODULE=bogo G_MESSAGES_DEBUG=all terminator
 ```
 
-Now press a random key.  You should see 'aaaa'. Then press **a**, the
-4 a's should change to 'bbbb'.
+Type some Vietnamese.  Only TELEX is supported ATM.
 
 To uninstall, update Gtk's cache again but without `GTK_PATH` set.
 
