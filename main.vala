@@ -9,6 +9,7 @@ namespace Remote {
 	interface InputContext : Object {
 		public abstract bool process_key(uint keyval,
 										 Gdk.ModifierType modifiers) throws IOError;
+		public abstract void reset() throws IOError;
 		public signal void composition_updated(string text, uint chars_to_delete);
 	}
 }
@@ -46,6 +47,16 @@ public class BogoIMContext : Gtk.IMContext {
 
 	public override void set_client_window(Gdk.Window window) {
 		client_window = window;
+	}
+	public override void reset() {
+		debug("reset()");
+
+		// Firefox will throws reset() when it sees our fake key so we
+		// will not actually reset if we're still waiting for the
+		// delayed commit.
+		// if (!has_delayed_commit()) {
+		// 	input_ctx.reset();
+		// }
 	}
 	
 	public override bool filter_keypress(Gdk.EventKey event) {
@@ -172,5 +183,9 @@ public class BogoIMContext : Gtk.IMContext {
 			((Gdk.Event) press_event).put();
 			((Gdk.Event) release_event).put();
 		}
+	}
+
+	private bool has_delayed_commit() {
+		return delayed_commit_text != "";
 	}
 }

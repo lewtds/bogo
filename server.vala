@@ -60,6 +60,11 @@ public class InputContext : Object {
 		return true;
 	}
 
+	public void reset() {
+		key_sequence.erase();
+		composition = "";
+	}
+
 	public signal void composition_updated(string text,
 										   uint chars_to_delete);
 }
