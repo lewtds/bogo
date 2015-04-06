@@ -53,9 +53,9 @@ public class InputContext : Object {
     }
 
     uint backspaces = composition.char_count() - same_chars;
-    string to_commit = \
+    string to_commit =
       new_comp.substring(new_comp.index_of_nth_char(same_chars));
-    debug(@"'$composition' : '$new_comp'")
+    debug(@"'$composition' : '$new_comp'");
     debug(@"same: $same_chars backspaces: $backspaces to commit: $to_commit");
     composition_updated(to_commit, backspaces);
 
