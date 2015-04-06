@@ -23,10 +23,8 @@ public class BogoIMContext : Gtk.IMContext {
 	private Remote.Server server;
 	private Remote.InputContext input_ctx;
 	private string composition = "";
-	private int id;
 
 	public BogoIMContext(int id) {
-		this.id = id;
 		prgname = Environment.get_prgname();
 		debug("prgname: %s", prgname);
 
@@ -96,7 +94,6 @@ public class BogoIMContext : Gtk.IMContext {
 		}
 
 		if (event.send_event == 1) {
-			debug(@"$id: fake press");
 			pending_fake_backspaces--;
 			return false;
 		}
@@ -111,7 +108,7 @@ public class BogoIMContext : Gtk.IMContext {
 		if (pending_fake_backspaces > 0 || delayed_commit_text != "") {
 			delayed_commit_text += text;
 		} else {
-			debug(@"$id: commit($text)");
+			debug(@"commit($text)");
 			commit(text);
 		}
 
@@ -136,6 +133,9 @@ public class BogoIMContext : Gtk.IMContext {
 		if (count == 0) {
 			return;
 		}
+
+		debug(@"delete($count)");
+		
 		if (is_app_blacklisted()) {
 			delete_with_backspace(count);
 		} else {
