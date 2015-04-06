@@ -133,6 +133,9 @@ public class BogoIMContext : Gtk.IMContext {
 	}
 
 	private void delete_previous_chars(uint count) {
+		if (count == 0) {
+			return;
+		}
 		if (is_app_blacklisted()) {
 			delete_with_backspace(count);
 		} else {
