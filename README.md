@@ -7,6 +7,9 @@ Make sure you have the latest Vala compiler and development headers
 for Gtk+ 2 installed.
 
 ```bash
+# Install bogo-python.  Just make sure you're using Python 3.
+$ sudo pip3 install bogo
+
 $ make
 
 # Update Gtk's immodules cache at
@@ -26,4 +29,5 @@ To uninstall, update Gtk's cache again but without `GTK_PATH` set.
 
 ```bash
 $ sudo gtk-query-immodules-2.0 --update-cache
+$ sudo pip3 uninstall bogo
 ```
