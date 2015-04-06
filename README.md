@@ -17,6 +17,9 @@ $ make
 # It's a plaintext file, open and see for yourself.
 $ sudo GTK_PATH=$PWD gtk-query-immodules-2.0 --update-cache
 
+# Run the server/daemon
+$ ./server
+
 # Run a Gtk 2 app with bogo. Candidates
 # include: pluma, terminator, firefox, chromium, etc.
 $ GTK_IM_MODULE=bogo G_MESSAGES_DEBUG=all terminator
