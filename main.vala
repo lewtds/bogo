@@ -128,6 +128,21 @@ public class BogoIMContext : Gtk.IMContext {
       return;
     }
 
+    // If there is pending commit text, delete chars inside it first
+    if (has_delayed_commit()) {
+      debug("delete_previous_commit() while still have delayed commit");
+      int str_count = delayed_commit_text.char_count();
+      if (count > str_count) {
+        delayed_commit_text = "";
+        count -= str_count;
+      } else {
+        int end_index = str_count - (int) count;
+        int end_byte_index = delayed_commit_text.index_of_nth_char(end_index);
+        delayed_commit_text = delayed_commit_text.substring(0, end_byte_index);
+        return;
+      }
+    }
+
     debug(@"delete($count)");
 		
     if (is_app_blacklisted()) {
