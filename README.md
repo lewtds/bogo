@@ -12,6 +12,9 @@ $ sudo pip3 install bogo
 
 $ make
 
+# Keep the server running in a separate terminal
+$ ./build/server
+
 # Run a Gtk+ 2 app with bogo.  Candidates include: pluma, terminator,
 # firefox, chromium, etc.  Note that you HAVE to be clear about the
 # Gtk version as loading Gtk 2's plugin in a Gtk 3 app will crash it.

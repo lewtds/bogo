@@ -12,7 +12,7 @@ build/server: server.vala
 	valac -o $@ $^ --pkg=gdk-3.0 --pkg=python3 --vapidir=.
 
 run: build
-	build/server & GTK_IM_MODULE_FILE=build/gtk$(GTK)/immodules.cache GTK_IM_MODULE=bogo $(CMD) ; kill $$!
+	GTK_IM_MODULE_FILE=build/gtk$(GTK)/immodules.cache GTK_IM_MODULE=bogo $(CMD)
 
 clean:
 	rm -rf build
