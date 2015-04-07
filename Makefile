@@ -11,6 +11,10 @@ $(GTK_CLIENTS): build/gtk%/immodules/im-bogo.so : main.vala module.vala
 build/server: server.vala
 	valac -o $@ $^ --pkg=gdk-3.0 --pkg=python3 --vapidir=.
 
+test: main.vala tests/test.vala
+	valac tests/test.vala main.vala --pkg=gtk+-3.0 -o build/test
+	build/test
+
 run: build
 	GTK_IM_MODULE_FILE=build/gtk$(GTK)/immodules.cache GTK_IM_MODULE=bogo $(CMD)
 
