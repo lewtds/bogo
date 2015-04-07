@@ -59,13 +59,17 @@ public class BogoIMContext : Gtk.IMContext {
     // 	input_ctx.reset();
     // }
   }
-	
+
+  public override void set_cursor_location(Gdk.Rectangle area) {
+    debug("set_cursor_location()");
+  }
+
   public override bool filter_keypress(Gdk.EventKey event) {
     last_event_time = event.time;
 
     if (event.type == Gdk.EventType.KEY_RELEASE &&
         event.keyval == 0xff08 &&
-        is_fake_event(event)) { 
+        is_fake_event(event)) {
 
       debug("fake release");
 
@@ -95,8 +99,9 @@ public class BogoIMContext : Gtk.IMContext {
   }
 
   private void update_composition(string text, uint chars_to_delete) {
+    debug(@"update_composition($text, $chars_to_delete)");
     delete_previous_chars(chars_to_delete);
-		
+
     if (pending_fake_backspaces > 0 || delayed_commit_text != "") {
       debug(@"delaying commit($text)");
       delayed_commit_text += text;
@@ -144,7 +149,7 @@ public class BogoIMContext : Gtk.IMContext {
     }
 
     debug(@"delete($count)");
-		
+
     if (is_app_blacklisted()) {
       delete_with_backspace(count);
     } else {
@@ -182,7 +187,8 @@ public class BogoIMContext : Gtk.IMContext {
     }
 
     // Put a key press event into Gdk's event queue
-    Gdk.EventKey* press_event = (Gdk.EventKey*) new Gdk.Event(Gdk.EventType.KEY_PRESS);
+    Gdk.EventKey* press_event =
+      (Gdk.EventKey*) new Gdk.Event(Gdk.EventType.KEY_PRESS);
     press_event->window = client_window;
     press_event->send_event = 1;
     press_event->keyval = keysym;
@@ -195,7 +201,8 @@ public class BogoIMContext : Gtk.IMContext {
     press_event->time = last_event_time + 1;
 
     // And the key release event
-    Gdk.EventKey* release_event = (Gdk.EventKey*) ((Gdk.Event) press_event).copy();
+    Gdk.EventKey* release_event =
+      (Gdk.EventKey*) ((Gdk.Event) press_event).copy();
     release_event->type = Gdk.EventType.KEY_RELEASE;
     release_event->state = release_event->state | Gdk.ModifierType.RELEASE_MASK;
     release_event->time = last_event_time + 2;
