@@ -197,7 +197,7 @@ public class BogoIMContext : Gtk.IMContext {
     release_event->time = last_event_time + 2;
 
     // LOL, chromium is so fucked up here
-    if (prgname == "chromium") {
+    if (prgname == "chromium" || prgname == "google-chrome-stable") {
       ((Gdk.Event) release_event).put();
       ((Gdk.Event) press_event).put();
     } else {
