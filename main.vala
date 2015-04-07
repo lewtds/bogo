@@ -1,14 +1,14 @@
 /* -*- indent-tabs-mode: nil; c-basic-offset: 2; tab-width: 2 -*- */
 
-namespace Remote {
+namespace Bogo {
 
   [DBus (name = "org.bogo.Server")]
-  interface Server : Object {
+  public interface Server : Object {
     public abstract int create_input_context() throws IOError;
   }
 
   [DBus (name = "org.bogo.InputContext")]
-  interface InputContext : Object {
+  public interface InputContext : Object {
     public abstract bool process_key(uint keyval,
                                      Gdk.ModifierType modifiers) throws IOError;
     public abstract void reset() throws IOError;
@@ -22,27 +22,15 @@ public class BogoIMContext : Gtk.IMContext {
   private string prgname;
   private uint pending_fake_backspaces;
   private string delayed_commit_text = "";
-  private Remote.Server server;
-  private Remote.InputContext input_ctx;
+  private Bogo.InputContext input_ctx;
   private string composition = "";
 
-  public BogoIMContext(int id) {
-    prgname = Environment.get_prgname();
-    debug("prgname: %s", prgname);
+  public BogoIMContext(string program_name, Bogo.InputContext ctx) {
+    debug("prgname: %s", program_name);
+    prgname = program_name;
 
-    try {
-      server = Bus.get_proxy_sync(BusType.SESSION,
-                                  "org.bogo", "/server");
-
-      int ctx_id = server.create_input_context();
-      input_ctx = Bus.get_proxy_sync(BusType.SESSION,
-                                     "org.bogo",
-                                     @"/input_context/$ctx_id");
-
-      input_ctx.composition_updated.connect(update_composition);
-    } catch (IOError e) {
-      warning("Cannot connect to bogo server");
-    }
+    input_ctx = ctx;
+    input_ctx.composition_updated.connect(update_composition);
   }
 
   ~BogoIMContext() {

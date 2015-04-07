@@ -34,7 +34,20 @@ int count = 0;
 public Gtk.IMContext? im_module_create (string context_id) {
   debug(@"$context_id requested $count");
   if (context_id == "bogo") {
-    return new BogoIMContext(count++);
+    try {
+      Bogo.Server server = Bus.get_proxy_sync(BusType.SESSION,
+                                  "org.bogo", "/server");
+
+      int ctx_id = server.create_input_context();
+      Bogo.InputContext input_ctx = Bus.get_proxy_sync(BusType.SESSION,
+                                     "org.bogo",
+                                     @"/input_context/$ctx_id");
+
+      string prgname = Environment.get_prgname();
+      return new BogoIMContext(prgname, input_ctx);
+    } catch (IOError e) {
+      warning("Cannot connect to bogo server");
+    }
   }
 
   return null;
