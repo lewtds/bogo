@@ -20,7 +20,9 @@ $ make run GTK=2 CMD=pluma
 $ make run GTK=3 CMD=gedit
 ```
 
-Type some Vietnamese.  Only TELEX is supported ATM.
+Type some Vietnamese.  Only TELEX is supported ATM.  Check out the
+[Testing](https://github.com/lewtds/bogo/wiki/Testing) page in the
+wiki for more test cases.
 
 Uninstall:
 
