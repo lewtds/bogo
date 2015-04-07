@@ -64,6 +64,7 @@ public class BogoIMContext : Gtk.IMContext {
     last_event_time = event.time;
 
     if (event.type == Gdk.EventType.KEY_RELEASE &&
+        event.keyval == 0xff08 &&
         is_fake_event(event)) { 
 
       debug("fake release");
@@ -83,7 +84,7 @@ public class BogoIMContext : Gtk.IMContext {
       return false;
     }
 
-    if (is_fake_event(event)) {
+    if (event.keyval == 0xff08 && is_fake_event(event)) {
       debug("fake_release");
       pending_fake_backspaces--;
       return false;
