@@ -129,6 +129,7 @@ public class BogoIMContext : Gtk.IMContext {
 
   private bool is_app_blacklisted() {
     string[] blacklist = {
+      "soffice",
       "firefox",
       "gnome-shell"
     };
