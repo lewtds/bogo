@@ -42,15 +42,12 @@ public class BogoIMContext : Gtk.IMContext {
   }
 
   public override void focus_in() {
-    debug("focus_in()");
   }
 
   public override void focus_out() {
-    debug("focus_out()");
   }
 
   public override void reset() {
-    debug("reset()");
 
     // Firefox will throws reset() when it sees our fake key so we
     // will not actually reset if we're still waiting for the
@@ -67,30 +64,47 @@ public class BogoIMContext : Gtk.IMContext {
   public override bool filter_keypress(Gdk.EventKey event) {
     last_event_time = event.time;
 
-    if (event.type == Gdk.EventType.KEY_RELEASE &&
-        event.keyval == 0xff08 &&
+    if (event.hardware_keycode == 255 &&
+        (event.state & (1 << 24)) != 0) { 
+      // Sentinel received, commit
+      debug(@"delayed commit: $delayed_commit_text");
+      commit(delayed_commit_text);
+      delayed_commit_text = "";
+      return true;
+    }
+
+    debug(@"filter($(event.keyval))");
+
+    if (event.keyval == 0xff08 &&
         is_fake_event(event)) {
 
-      debug("fake release");
+      if (event.type == Gdk.EventType.KEY_RELEASE) {
+        pending_fake_backspaces--;
 
-      if (pending_fake_backspaces == 0 &&
-          delayed_commit_text != "") {
-
-        debug(@"delayed commit: $delayed_commit_text");
-        commit(delayed_commit_text);
-        delayed_commit_text = "";
+        if (pending_fake_backspaces == 0 &&
+            delayed_commit_text != "") {
+          // Last fake backspace release received
+          // Send a sentinel event to trigger the delayed commit
+          debug("Last fake release, sending sentinel");
+        
+          Gdk.EventKey* sentinel =
+          (Gdk.EventKey*) new Gdk.Event(Gdk.EventType.KEY_PRESS);
+          sentinel->window = client_window;
+          sentinel->state = (Gdk.ModifierType) 1 << 24;
+          sentinel->time = last_event_time + 1;
+          sentinel->hardware_keycode = 255;
+          sentinel->send_event = 1;
+          sentinel->str = "";
+          sentinel->group = 0;
+          sentinel->is_modifier = 0;
+          ((Gdk.Event*) sentinel)->put();
+        }
       }
 
       return false;
     }
 
     if (event.type != Gdk.EventType.KEY_PRESS) {
-      return false;
-    }
-
-    if (event.keyval == 0xff08 && is_fake_event(event)) {
-      debug("fake_release");
-      pending_fake_backspaces--;
       return false;
     }
 
@@ -150,15 +164,16 @@ public class BogoIMContext : Gtk.IMContext {
 
     debug(@"delete($count)");
 
-    if (is_app_blacklisted()) {
-      delete_with_backspace(count);
-    } else {
-      var deleted = delete_surrounding(-(int) count, (int) count);
-      if (!deleted) {
-        debug("delete_surrounding() failed.");
-        delete_with_backspace(count);
-      }
-    }
+    delete_with_backspace(count);
+    // if (is_app_blacklisted()) {
+    //   delete_with_backspace(count);
+    // } else {
+    //   var deleted = delete_surrounding(-(int) count, (int) count);
+    //   if (!deleted) {
+    //     debug("delete_surrounding() failed.");
+    //     delete_with_backspace(count);
+    //   }
+    // }
   }
 
   private void delete_with_backspace(uint count) {
