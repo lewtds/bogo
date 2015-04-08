@@ -165,16 +165,15 @@ public class BogoIMContext : Gtk.IMContext {
 
     debug(@"delete($count)");
 
-    delete_with_backspace(count);
-    // if (is_app_blacklisted()) {
-    //   delete_with_backspace(count);
-    // } else {
-    //   var deleted = delete_surrounding(-(int) count, (int) count);
-    //   if (!deleted) {
-    //     debug("delete_surrounding() failed.");
-    //     delete_with_backspace(count);
-    //   }
-    // }
+    if (is_app_blacklisted()) {
+      delete_with_backspace(count);
+    } else {
+      var deleted = delete_surrounding(-(int) count, (int) count);
+      if (!deleted) {
+        debug("delete_surrounding() failed.");
+        delete_with_backspace(count);
+      }
+    }
   }
 
   private void delete_with_backspace(uint count) {
