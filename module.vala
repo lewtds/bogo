@@ -30,9 +30,7 @@ public void im_module_init (TypeModule type_module) {
 public void im_module_exit () {
 }
 
-int count = 0;
 public Gtk.IMContext? im_module_create (string context_id) {
-  debug(@"$context_id requested $count");
   if (context_id == "bogo") {
     try {
       Bogo.Server server = Bus.get_proxy_sync(BusType.SESSION,
