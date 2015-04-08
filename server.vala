@@ -19,6 +19,7 @@ public class InputContext : Object {
   public bool process_key(uint keyval, Gdk.ModifierType modifiers) {
     if ((modifiers & (Gdk.ModifierType.CONTROL_MASK)) != 0 ||
         keyval > 128) {
+      reset();
       return false;
     }
 
