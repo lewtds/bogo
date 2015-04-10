@@ -6,6 +6,7 @@ import os
 import signal
 import time
 import unittest
+from gi.repository import Gtk, Gdk
 
 
 keysequence = open(os.path.join(os.path.dirname(__file__), 'keysequence')).read().strip()
@@ -123,5 +124,26 @@ class TestGVim(BogoTestCase):
         with open(self.destFile) as f:
             self.assertEqual(f.read().strip(), expected)
 
+
+class TestInkscape(BogoTestCase):
+    command = 'make run GTK=2 CMD=inkscape'
+    appName = 'inkscape'
+
+    def testTypeInTextTool(self):
+        # zoom in a bit
+        call(['xdotool', 'key', '1'])
+
+        # Create a text box
+        call('xdotool search --onlyvisible --class Inkscape windowraise mousemove  --window %1 100 100 key F8 mousedown 1 mousemove_relative 200 200 mouseup 1', shell=True)
+
+        self.typeIn()
+
+        call(['xdotool', 'key', 'control+a'])
+        call(['xdotool', 'key', 'control+c'])
+        time.sleep(1)
+
+        clipboard_text = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD).wait_for_text()
+        self.assertEqual(clipboard_text, expected)
+        
 if __name__ == '__main__':
     unittest.main()
