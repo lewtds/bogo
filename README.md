@@ -3,8 +3,9 @@ the moment.
 
 ## How to test
 
-Make sure you have the latest Vala compiler and development headers
-for Gtk+ 2, Gtk+ 3 and Python 3 installed.
+Make sure you have the latest Vala compiler (0.24+, won't run with
+0.22) and development headers for Gtk+ 2, Gtk+ 3 and Python 3
+installed.
 
 ```bash
 # Install bogo-python.  Just make sure you're using Python 3.
