@@ -2,8 +2,8 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-  config.vm.define "ubuntu-12.04" do |ubuntu|
-    ubuntu.vm.box = "hashicorp/precise64"
+  config.vm.define "ubuntu-14.04" do |ubuntu|
+    ubuntu.vm.box = "hashicorp/trusty64"
   end
 
   config.vm.define "fedora-21" do |fedora|
