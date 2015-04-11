@@ -3,7 +3,7 @@
 
 Vagrant.configure(2) do |config|
   config.vm.define "ubuntu-14.04" do |ubuntu|
-    ubuntu.vm.box = "hashicorp/trusty64"
+    ubuntu.vm.box = "ubuntu/trusty64"
   end
 
   config.vm.define "fedora-21" do |fedora|
