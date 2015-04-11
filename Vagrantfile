@@ -8,6 +8,20 @@ Vagrant.configure(2) do |config|
 
   config.vm.define "fedora-21" do |fedora|
     fedora.vm.box = "hansode/fedora-21-server-x86_64"
+
+script = <<SCRIPT
+timedatectl set-local-rtc 0
+
+CORE_DEPS="vala gtk2-devel gtk3-devel python3-devel"
+TEST_DEPS="openbox xdotool dbus-x11 xorg-x11-server-Xvfb"
+TEST_APPS="gvim geany libreoffice-writer inkscape terminator"
+UTILS="byobu psmisc"
+
+yum install -y $CORE_DEPS $TEST_DEPS $TEST_APPS $UTILS
+yes | pip3 install bogo
+SCRIPT
+
+    fedora.vm.provision "shell", inline: script
   end
 
   config.vm.provider "virtualbox" do |vb|
