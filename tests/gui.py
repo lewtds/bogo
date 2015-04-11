@@ -36,7 +36,8 @@ class BogoTestCase(unittest.TestCase):
         os.kill(self.pid, signal.SIGTERM)
 
     def typeIn(self):
-        call(['xdotool', 'type', keysequence])
+        # 80ms between each event -> ~75WPM
+        call(['xdotool', 'type', '--delay', '80', keysequence])
         time.sleep(1)
 
 
