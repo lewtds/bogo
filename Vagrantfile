@@ -4,6 +4,21 @@
 Vagrant.configure(2) do |config|
   config.vm.define "ubuntu-14.04" do |ubuntu|
     ubuntu.vm.box = "ubuntu/trusty64"
+
+script = <<SCRIPT
+CORE_DEPS="valac libgtk2.0-dev libgtk-3-dev python3-dev python3-pip"
+TEST_DEPS="openbox xvfb xdotool python-dogtail org.gnome.desktop.interface"
+TEST_APPS="vim-gtk geany libreoffice-writer terminator inkscape"
+UTILS="byobu"
+
+add-apt-repository ppa:vala-team/ppa
+apt-get update
+apt-get install -y $CORE_DEPS $TEST_DEPS $TEST_APPS $UTILS
+
+pip3 install bogo
+SCRIPT
+    
+    ubuntu.vm.provision "shell", inline: script
   end
 
   config.vm.define "fedora-21" do |fedora|
