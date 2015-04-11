@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from dogtail.procedural import *
+from dogtail import tree
 from subprocess import call, Popen
 import os
 import signal
 import time
 import unittest
 from gi.repository import Gtk, Gdk
+import SimpleHTTPServer
+import SocketServer
+import threading
+
 
 
 keysequence = open(os.path.join(os.path.dirname(__file__), 'keysequence')).read().strip()
@@ -156,6 +161,74 @@ class TestInkscape(BogoTestCase):
 
         clipboard_text = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD).wait_for_text()
         self.assertEqual(clipboard_text, expected)
-        
+
+
+@unittest.skipIf(not hasCommand('firefox'), 'firefox not available')
+class TestFirefox(BogoTestCase):
+    command = 'make run GTK=2 CMD=firefox'
+    appName = 'Firefox'
+    httpd = None
+
+    @classmethod
+    def setUpClass(cls):
+        def serve():
+            PORT = 8000
+            Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
+            cls.httpd = SocketServer.TCPServer(("", PORT), Handler)
+            cls.httpd.serve_forever()
+
+        threading.Thread(target=serve).start()
+
+        cls.pid = run(cls.command, appName=cls.appName)
+        cls.app = tree.root.application('Firefox')
+        time.sleep(2)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.httpd.shutdown()
+        os.kill(cls.pid, signal.SIGTERM)
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def goToAddress(self, addr):
+        address_bar = self.app.child(roleName='entry',
+                                     name='Search or enter address')
+        address_bar.text = addr
+        address_bar.keyCombo('Return')
+        time.sleep(5)
+
+    def testTypeInVanillaTextArea(self):
+        self.goToAddress('http://localhost:8000/tests/text-area.html')
+        page = self.app.child(roleName='document frame',
+                              name='Bogo Text Area Test')
+        entry = page.child(name='test area', roleName='entry')
+        entry.click()
+
+        self.typeIn()
+
+        self.assertEqual(entry.text, expected)
+
+    @unittest.expectedFailure
+    def testTypeInFacebookComment(self):
+        self.goToAddress('http://localhost:8000/tests/facebook-comment.html')
+        page = self.app.child(roleName='document frame',
+                              name='Bogo Facebook Comments Test')
+
+        fb = page.child(roleName='document frame',
+                        name='Facebook Social Plugin')
+
+        commentDiv = fb[0][0][0][0][1][1][0][0]
+        commentDiv.click()
+
+        self.typeIn()
+
+        entry = page.child(roleName='combo box')[0][0]
+        self.assertEqual(entry.text, expected)
+
+
 if __name__ == '__main__':
     unittest.main()
