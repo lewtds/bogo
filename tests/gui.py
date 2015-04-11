@@ -14,6 +14,10 @@ expected = open(os.path.join(os.path.dirname(__file__), 'expected')).read().stri
 server = None
 
 
+def hasCommand(cmd):
+    return call(['which', cmd]) == 0
+
+
 def setUpModule():
     global server
     server = Popen('build/server')
@@ -26,7 +30,7 @@ def tearDownModule():
 class BogoTestCase(unittest.TestCase):
     def setUp(self):
         self.pid = run(self.command, appName=self.appName)
-        focus.application(name=self.appName)
+        focus.app(self.appName)
 
     def tearDown(self):
         os.kill(self.pid, signal.SIGTERM)
@@ -36,6 +40,7 @@ class BogoTestCase(unittest.TestCase):
         time.sleep(1)
 
 
+@unittest.skipIf(not hasCommand('terminator'), "terminator not available")
 class TestTerminator(BogoTestCase):
     command = 'make run GTK=2 CMD=terminator'
     appName = 'terminator'
@@ -51,6 +56,7 @@ class TestTerminator(BogoTestCase):
         self.assertEqual(widgetText, expected)
 
 
+@unittest.skipIf(not hasCommand('geany'), "geany not available")
 class TestGeany(BogoTestCase):
     command = 'make run GTK=2 CMD=geany'
     appName = 'geany'
@@ -76,8 +82,9 @@ class TestGeany(BogoTestCase):
             self.assertEqual(f.read().strip(), expected)
 
 
+@unittest.skipIf(not hasCommand('libreoffice'), 'libreoffice not available')
 class TestLibreOfficeWriter(BogoTestCase):
-    command = 'make run GTK=2 CMD="lowriter --nologo --norestore"'
+    command = 'make run GTK=2 CMD="libreoffice --writer --nologo --norestore"'
     appName = 'soffice'
 
     def tearDown(self):
@@ -97,6 +104,7 @@ class TestLibreOfficeWriter(BogoTestCase):
         self.assertEqual(focus.widget.text, expected)
 
 
+@unittest.skipIf(not hasCommand('gvim'), 'gvim not available')
 class TestGVim(BogoTestCase):
     command = 'make run GTK=2 CMD=gvim'
     appName = 'gvim'
@@ -125,6 +133,7 @@ class TestGVim(BogoTestCase):
             self.assertEqual(f.read().strip(), expected)
 
 
+@unittest.skipIf(not hasCommand('inkscape'), 'inkscape not available')
 class TestInkscape(BogoTestCase):
     command = 'make run GTK=2 CMD=inkscape'
     appName = 'inkscape'
@@ -139,6 +148,7 @@ class TestInkscape(BogoTestCase):
         self.typeIn()
 
         call(['xdotool', 'key', 'control+a'])
+        time.sleep(1)
         call(['xdotool', 'key', 'control+c'])
         time.sleep(1)
 
