@@ -101,6 +101,7 @@ class TestLibreOfficeWriter(BogoTestCase):
         focus.widget(roleName='paragraph')
 
         self.typeIn()
+        time.sleep(0.5)
 
         self.assertEqual(focus.widget.text, expected)
 
