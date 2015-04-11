@@ -12,7 +12,7 @@ build/server: server.vala
 	valac -o $@ $^ --pkg=gdk-3.0 --pkg=python3 --vapidir=.
 
 test: main.vala tests/test.vala
-	valac tests/test.vala main.vala --pkg=gtk+-3.0 -o build/test
+	valac $^ --pkg=gtk+-3.0 -o build/test
 	build/test
 	python2 tests/gui.py
 
@@ -26,4 +26,4 @@ dirs:
 	mkdir -p build/gtk2/immodules
 	mkdir -p build/gtk3/immodules
 
-.PHONY: all dirs clean run
+.PHONY: all dirs clean run test
