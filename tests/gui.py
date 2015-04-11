@@ -85,7 +85,7 @@ class TestGeany(BogoTestCase):
 
 @unittest.skipIf(not hasCommand('libreoffice'), 'libreoffice not available')
 class TestLibreOfficeWriter(BogoTestCase):
-    command = 'make run GTK=2 CMD="libreoffice --writer --nologo --norestore"'
+    command = "make run CMD=tests/run-lowriter.sh GTK=2"
     appName = 'soffice'
 
     def tearDown(self):
