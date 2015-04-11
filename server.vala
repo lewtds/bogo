@@ -27,7 +27,7 @@ public class InputContext : Object {
 
     var args = Python.Object.build_value("(s)", key_sequence.str);
     var result = (Python.Unicode) process_sequence_func.call(args);
-    var new_comp = result.as_utf8();
+    var new_comp = result.as_utf8_string().as_string();
 
     if (composition == null) {
       composition_updated(new_comp, 0);

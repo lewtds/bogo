@@ -49,10 +49,10 @@ namespace Python {
 	[CCode (cname = "PyObject")]
 	public class Bytes : Object {
 
-		[CCode (cname = "PyString_FromString")]
+		[CCode (cname = "PyBytes_FromString")]
 		public static Bytes from_string(string from);
 
-		[CCode (cname = "PyString_AsString")]
+		[CCode (cname = "PyBytes_AsString")]
 		public unowned string as_string();
 	}
 
@@ -64,6 +64,9 @@ namespace Python {
 
 		[CCode (cname = "PyUnicode_AsUTF8")]
 		public unowned string as_utf8();
+
+		[CCode (cname = "PyUnicode_AsUTF8String")]
+		public Bytes as_utf8_string();
 	}
 
 	namespace Import {
