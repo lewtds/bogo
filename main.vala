@@ -49,63 +49,12 @@ public class ForwardKeyEventIMContext : BogoIMContext {
   private void commit_by_forwarding(string text) {
     unichar c;
     for (int i = 0; text.get_next_char(ref i, out c);) {
-      uint keysym = unichar_to_keysym(c);
+      uint keysym = Gdk.unicode_to_keyval(c);
 
       debug("Send fake key 0x%x".printf(keysym));
       
       fake_key(keysym, 0);
     }
-  }
-
-  private uint unichar_to_keysym(unichar c) {
-    unichar[] chars = 
-      {'Ạ', 'ạ', 'Ả', 'ả', 'Ấ', 'ấ', 'Ầ', 'ầ', 'Ẩ', 'ẩ',
-       'Ẫ', 'ẫ', 'Ậ', 'ậ', 'Ắ', 'ắ', 'Ằ', 'ằ', 'Ẳ', 'ẳ',
-       'Ẵ', 'ẵ', 'Ặ', 'ặ', 'Ẹ', 'ẹ', 'Ẻ', 'ẻ', 'Ẽ', 'ẽ',
-       'Ế', 'ế', 'Ề', 'ề', 'Ể', 'ể', 'Ễ', 'ễ', 'Ệ', 'ệ',
-       'Ỉ', 'ỉ', 'Ị', 'ị', 'Ọ', 'ọ', 'Ỏ', 'ỏ', 'Ố', 'ố',
-       'Ồ', 'ồ', 'Ổ', 'ổ', 'Ỗ', 'ỗ', 'Ộ', 'ộ', 'Ớ', 'ớ',
-       'Ờ', 'ờ', 'Ở', 'ở', 'Ỡ', 'ỡ', 'Ợ', 'ợ', 'Ụ', 'ụ',
-       'Ủ', 'ủ', 'Ứ', 'ứ', 'Ừ', 'ừ', 'Ử', 'ử', 'Ữ', 'ữ',
-       'Ự', 'ự', 'Ỵ', 'ỵ', 'Ỷ', 'ỷ', 'Ỹ', 'ỹ', 'Ơ', 'ơ',
-       'Ư', 'ư', 'ă', 'Ă', 'Ỳ', 'ỳ', 'Đ', 'đ', 'Ĩ', 'ĩ',
-       'Ũ', 'ũ'};
-
-    int[] keysyms = 
-      {0x1001ea0, 0x1001ea1, 0x1001ea2, 0x1001ea3,
-       0x1001ea4, 0x1001ea5, 0x1001ea6, 0x1001ea7,
-       0x1001ea8, 0x1001ea9, 0x1001eaa, 0x1001eab,
-       0x1001eac, 0x1001ead, 0x1001eae, 0x1001eaf,
-       0x1001eb0, 0x1001eb1, 0x1001eb2, 0x1001eb3,
-       0x1001eb4, 0x1001eb5, 0x1001eb6, 0x1001eb7,
-       0x1001eb8, 0x1001eb9, 0x1001eba, 0x1001ebb,
-       0x1001ebc, 0x1001ebd, 0x1001ebe, 0x1001ebf,
-       0x1001ec0, 0x1001ec1, 0x1001ec2, 0x1001ec3,
-       0x1001ec4, 0x1001ec5, 0x1001ec6, 0x1001ec7,
-       0x1001ec8, 0x1001ec9, 0x1001eca, 0x1001ecb,
-       0x1001ecc, 0x1001ecd, 0x1001ece, 0x1001ecf,
-       0x1001ed0, 0x1001ed1, 0x1001ed2, 0x1001ed3,
-       0x1001ed4, 0x1001ed5, 0x1001ed6, 0x1001ed7,
-       0x1001ed8, 0x1001ed9, 0x1001eda, 0x1001edb,
-       0x1001edc, 0x1001edd, 0x1001ede, 0x1001edf,
-       0x1001ee0, 0x1001ee1, 0x1001ee2, 0x1001ee3,
-       0x1001ee4, 0x1001ee5, 0x1001ee6, 0x1001ee7,
-       0x1001ee8, 0x1001ee9, 0x1001eea, 0x1001eeb,
-       0x1001eec, 0x1001eed, 0x1001eee, 0x1001eef,
-       0x1001ef0, 0x1001ef1, 0x1001ef4, 0x1001ef5,
-       0x1001ef6, 0x1001ef7, 0x1001ef8, 0x1001ef9,
-       0x10001a0, 0x10001a1, 0x10001af, 0x10001b0,
-       0x01e3, 0x01c3, 0x1001ef2, 0x1001ef3,
-       0x01d0, 0x01f0, 0x03a5, 0x03b5,
-       0x03dd, 0x03fd};
-
-    for (int i = 0; i < chars.length; i++) {
-      if (chars[i] == c) {
-        return keysyms[i];
-      }
-    }
-
-    return c;
   }
 }
 
