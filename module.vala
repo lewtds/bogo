@@ -42,7 +42,12 @@ public Gtk.IMContext? im_module_create (string context_id) {
                                      @"/input_context/$ctx_id");
 
       string prgname = Environment.get_prgname();
-      return new BogoIMContext(prgname, input_ctx);
+
+      if (prgname == "firefox") {
+        return new ForwardKeyEventIMContext(prgname, input_ctx);
+      } else {
+        return new BackspaceRealCommitIMContext(prgname, input_ctx);
+      }
     } catch (IOError e) {
       warning("Cannot connect to bogo server");
     }
