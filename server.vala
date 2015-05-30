@@ -113,6 +113,9 @@ void main() {
                () => { stderr.printf("Cannot acquire name!\n"); });
 
   Python.initialize_ex(0);
+
+  Python.run_simple_string("import sys; sys.path.insert(0, 'bogo-python')");
+
   var bogo_module = Python.Import.import_module("bogo");
   process_sequence_func = bogo_module.get_attr_string("process_sequence");
 

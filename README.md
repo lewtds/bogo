@@ -8,9 +8,6 @@ Make sure you have the latest Vala compiler (0.24+, won't run with
 installed.
 
 ```bash
-# Install bogo-python.  Just make sure you're using Python 3.
-$ sudo pip3 install bogo
-
 $ make
 
 # Keep the server running in a separate terminal
@@ -28,9 +25,3 @@ $ make run GTK=3 CMD=gedit
 Type some Vietnamese.  Only TELEX is supported ATM.  Check out the
 [Testing](https://github.com/lewtds/bogo/wiki/Testing) page in the
 wiki for more test cases.
-
-Uninstall:
-
-```bash
-$ sudo pip3 uninstall bogo
-```
