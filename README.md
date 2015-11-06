@@ -8,21 +8,26 @@ Make sure you have the latest Vala compiler (0.24+, won't run with
 installed.
 
 ```bash
-$ make
+make
 
 # Edit `org.bogo.service` to point to the source directory then copy
-# it to ~/.local/share/dbus-1/services
+# it to ~/.local/share/dbus-1/services. After this, the daemon will
+# be automatically launched when needed.
 install -D org.bogo.service ~/.local/share/dbus-1/services/org.bogo.service
 
 # Run a Gtk+ 2 app with bogo.  Candidates include: pluma, terminator,
 # firefox, chromium, etc.  Note that you HAVE to be clear about the
 # Gtk version as loading Gtk 2's plugin in a Gtk 3 app will crash it.
-$ make run GTK=2 CMD=pluma
+make run GTK=2 CMD=pluma
 
 # or Gtk+ 3:
-$ make run GTK=3 CMD=gedit
+make run GTK=3 CMD=gedit
 ```
 
 Type some Vietnamese.  Only TELEX is supported ATM.  Check out the
 [Testing](https://github.com/lewtds/bogo/wiki/Testing) page in the
 wiki for more test cases.
+
+## Dogtail test suite
+
+You'll need the `dogtail` python package installed.
