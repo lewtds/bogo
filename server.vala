@@ -105,16 +105,35 @@ void on_bus_acquired(DBusConnection conn) {
 }
 
 
-void main() {
+[CCode (cname = "g_utf8_to_ucs4_fast")]
+extern unichar *g_utf8_to_ucs4_fast (string str,
+                     long len,
+                     long *items_written);
+
+
+void main(string[] argv) {
   Bus.own_name(BusType.SESSION,
                "org.bogo",
                BusNameOwnerFlags.NONE, on_bus_acquired,
                () => {},
                () => { stderr.printf("Cannot acquire name!\n"); });
 
+  long items;
+  unichar *filename = g_utf8_to_ucs4_fast(argv[0], argv[0].length, &items);
+  Python.set_program_name(filename);
+
   Python.initialize_ex(0);
 
-  Python.run_simple_string("import sys; sys.path.insert(0, 'bogo-python')");
+  Python.run_simple_string("""
+import sys
+import os.path as path
+
+print(sys.executable, sys.path)
+code_dir = path.join(path.dirname(sys.executable), '..', 'bogo-python')
+print(code_dir)
+
+sys.path.insert(0, code_dir)
+""");
 
   var bogo_module = Python.Import.import_module("bogo");
   process_sequence_func = bogo_module.get_attr_string("process_sequence");

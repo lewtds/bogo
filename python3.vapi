@@ -34,8 +34,11 @@ namespace Python {
 	[CCode (cname="Py_InitializeEx")]
 	public void initialize_ex(int initsigs);
 
+	// the `name` argument is actually wchar_t* in the C code, which is
+	// a bit different from unichar* but we can assume they're the same
+	// on Linux.
 	[CCode (cname = "Py_SetProgramName")]
-	public void set_program_name(uint16* name);
+	public void set_program_name(unichar* name);
 
 	[CCode (cname = "PyRun_SimpleString")]
 	public int run_simple_string(string command);
