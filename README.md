@@ -10,8 +10,9 @@ installed.
 ```bash
 $ make
 
-# Keep the server running in a separate terminal
-$ ./build/server
+# Edit `org.bogo.service` to point to the source directory then copy
+# it to ~/.local/share/dbus-1/services
+install -D org.bogo.service ~/.local/share/dbus-1/services/org.bogo.service
 
 # Run a Gtk+ 2 app with bogo.  Candidates include: pluma, terminator,
 # firefox, chromium, etc.  Note that you HAVE to be clear about the
