@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.bogo
+Exec=/home/chin/dev/bogo/build/server
