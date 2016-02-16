@@ -26,4 +26,10 @@ dirs:
 	mkdir -p build/gtk2/immodules
 	mkdir -p build/gtk3/immodules
 
+install: build/gtk2/immodules/im-bogo.so
+	install -D build/gtk2/immodules/im-bogo.so /usr/lib64/gtk-2.0/2.10.0/immodules
+	install -D build/server /usr/bin/bogo-daemon
+	install -D org.bogo.service /usr/share/dbus-1/services/org.bogo.service
+	gtk-query-immodules-2.0-64 --update-cache
+
 .PHONY: all dirs clean run test
