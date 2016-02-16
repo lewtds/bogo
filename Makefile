@@ -56,4 +56,6 @@ rpm:
 		--version 0.1 \
 		--after-install scripts/after-install.sh \
 		--after-remove scripts/after-remove.sh \
+		--depends python3 \
+		--depends gtk2 \
 		-C dist usr/lib64/ usr/share
