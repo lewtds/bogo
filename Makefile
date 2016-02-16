@@ -35,7 +35,8 @@ dirs:
 
 .PHONY: install
 install: build
-	install -D build/gtk2/immodules/im-bogo.so $(DESTDIR)/usr/lib64/gtk-2.0/2.10.0/immodules/im-bogo.so
+	install -D build/gtk2/immodules/im-bogo.so $(DESTDIR)/usr/lib64/gtk-2.0/immodules/im-bogo.so
+	install -D build/gtk3/immodules/im-bogo.so $(DESTDIR)/usr/lib64/gtk-3.0/immodules/im-bogo.so
 	install -D build/server $(DESTDIR)/usr/lib64/bogo/bogo-daemon
 	mkdir -p $(DESTDIR)/usr/lib64/bogo/bogo-python
 	cp -R bogo-python $(DESTDIR)/usr/lib64/bogo/bogo-python
@@ -45,14 +46,14 @@ install: build
 uninstall:
 	rm -rf $(DESTDIR)/usr/lib4/bogo
 	rm -rf $(DESTDIR)/usr/share/dbus-1/services/org.bogo.service
-	rm -rf $(DESTDIR)/usr/lib64/gtk-2.0/2.10.0/immodules/im-bogo.so
+	rm -rf $(DESTDIR)/usr/lib64/gtk-2.0/immodules/im-bogo.so
+	rm -rf $(DESTDIR)/usr/lib64/gtk-3.0/immodules/im-bogo.so
 
 rpm:
 	make install DESTDIR=dist
 	fpm -f -s dir \
 		-t rpm \
 		-n bogo \
-		--epoch 1 \
 		--version 0.1 \
 		--after-install scripts/after-install.sh \
 		--after-remove scripts/after-remove.sh \
