@@ -3,6 +3,7 @@ all: dirs build
 GTK_CLIENTS=build/gtk2/immodules/im-bogo.so build/gtk3/immodules/im-bogo.so
 
 build: $(GTK_CLIENTS) build/server
+	ln -s $(PWD)/bogo-python build/bogo-python
 
 $(GTK_CLIENTS): build/gtk%/immodules/im-bogo.so : main.vala module.vala
 	valac -o $@ $^ --vapi=build/im-bogo.vapi --library=im-bogo --pkg=gtk+-$*.0 -X -fPIC -X -shared
@@ -28,7 +29,9 @@ dirs:
 
 install: build/gtk2/immodules/im-bogo.so
 	install -D build/gtk2/immodules/im-bogo.so /usr/lib64/gtk-2.0/2.10.0/immodules
-	install -D build/server /usr/bin/bogo-daemon
+	install -D build/server /usr/lib64/bogo/bogo-daemon
+	mkdir -p /usr/lib64/bogo/bogo-python
+	cp -R bogo-python /usr/lib64/bogo/bogo-python
 	install -D org.bogo.service /usr/share/dbus-1/services/org.bogo.service
 	gtk-query-immodules-2.0-64 --update-cache
 

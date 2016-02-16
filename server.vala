@@ -129,7 +129,7 @@ import sys
 import os.path as path
 
 print(sys.executable, sys.path)
-code_dir = path.join(path.dirname(sys.executable), '..', 'bogo-python')
+code_dir = path.join(path.dirname(sys.executable), 'bogo-python')
 print(code_dir)
 
 sys.path.insert(0, code_dir)
