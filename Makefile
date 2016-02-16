@@ -49,6 +49,7 @@ uninstall:
 	rm -rf $(DESTDIR)/usr/lib64/gtk-2.0/immodules/im-bogo.so
 	rm -rf $(DESTDIR)/usr/lib64/gtk-3.0/immodules/im-bogo.so
 
+.PHONY: rpm
 rpm:
 	make install DESTDIR=dist
 	fpm -f -s dir \
