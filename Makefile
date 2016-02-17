@@ -49,15 +49,34 @@ uninstall:
 	rm -rf $(DESTDIR)/usr/lib64/gtk-2.0/immodules/im-bogo.so
 	rm -rf $(DESTDIR)/usr/lib64/gtk-3.0/immodules/im-bogo.so
 
+VERSION=0.1
+NAME=bogo
+
 .PHONY: rpm
 rpm:
 	make install DESTDIR=dist
 	fpm -f -s dir \
 		-t rpm \
-		-n bogo \
-		--version 0.1 \
+		-n $(NAME) \
+		--version $(VERSION) \
+		--iteration 1 \
 		--after-install scripts/after-install.sh \
 		--after-remove scripts/after-remove.sh \
 		--depends python3 \
 		--depends gtk2 \
+		-C dist usr/lib64/ usr/share
+
+.PHONY: deb
+deb:
+	make install DESTDIR=dist
+	fpm -f -s dir \
+		-t deb \
+		-n $(NAME) \
+		--version $(VERSION) \
+		--iteration 1 \
+		--after-install scripts/after-install.sh \
+		--after-remove scripts/after-remove.sh \
+		--depends python3 \
+		--depends libgtk2.0-0 \
+		--depends libgtk-3-0 \
 		-C dist usr/lib64/ usr/share
