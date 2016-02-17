@@ -33,21 +33,29 @@ dirs:
 	mkdir -p build/gtk2/immodules
 	mkdir -p build/gtk3/immodules
 
+# https://www.gnu.org/prep/standards/html_node/Directory-Variables.html
+prefix ?= /usr
+exec_prefix ?= $(prefix)
+libdir ?= $(prefix)/lib64
+libexecdir ?= $(exec_prefix)/libexec
+datarootdir ?= $(prefix)/share
+datadir ?= $(datarootdir)
+
 .PHONY: install
 install: build
-	install -D build/gtk2/immodules/im-bogo.so $(DESTDIR)/usr/lib64/gtk-2.0/immodules/im-bogo.so
-	install -D build/gtk3/immodules/im-bogo.so $(DESTDIR)/usr/lib64/gtk-3.0/immodules/im-bogo.so
-	install -D build/server $(DESTDIR)/usr/lib64/bogo/bogo-daemon
-	mkdir -p $(DESTDIR)/usr/lib64/bogo/bogo-python
-	cp -R bogo-python $(DESTDIR)/usr/lib64/bogo/bogo-python
-	install -D src/org.bogo.service $(DESTDIR)/usr/share/dbus-1/services/org.bogo.service
+	install -D build/gtk2/immodules/im-bogo.so $(DESTDIR)$(libdir)/gtk-2.0/immodules/im-bogo.so
+	install -D build/gtk3/immodules/im-bogo.so $(DESTDIR)$(libdir)/gtk-3.0/immodules/im-bogo.so
+	install -D build/server $(DESTDIR)$(libdir)/bogo/bogo-daemon
+	mkdir -p $(DESTDIR)$(libdir)/bogo/bogo-python
+	cp -R bogo-python $(DESTDIR)$(libdir)/bogo
+	install -D src/org.bogo.service $(DESTDIR)$(datadir)/dbus-1/services/org.bogo.service
 
 .PHONY: uninstall
 uninstall:
-	rm -rf $(DESTDIR)/usr/lib4/bogo
-	rm -rf $(DESTDIR)/usr/share/dbus-1/services/org.bogo.service
-	rm -rf $(DESTDIR)/usr/lib64/gtk-2.0/immodules/im-bogo.so
-	rm -rf $(DESTDIR)/usr/lib64/gtk-3.0/immodules/im-bogo.so
+	rm -rf $(DESTDIR)$(libdir)/bogo
+	rm -rf $(DESTDIR)$(datadir)/dbus-1/services/org.bogo.service
+	rm -rf $(DESTDIR)$(libdir)/gtk-2.0/immodules/im-bogo.so
+	rm -rf $(DESTDIR)$(libdir)/gtk-3.0/immodules/im-bogo.so
 
 VERSION=0.1
 NAME=bogo
@@ -60,23 +68,23 @@ rpm:
 		-n $(NAME) \
 		--version $(VERSION) \
 		--iteration 1 \
-		--after-install scripts/after-install.sh \
-		--after-remove scripts/after-remove.sh \
+		--after-install scripts/after-install.fedora.sh \
+		--after-remove scripts/after-remove.fedora.sh \
 		--depends python3 \
 		--depends gtk2 \
-		-C dist usr/lib64/ usr/share
+		-C dist usr
 
 .PHONY: deb
 deb:
-	make install DESTDIR=dist
+	make install DESTDIR=dist libdir=/usr/lib/x86_64-linux-gnu
 	fpm -f -s dir \
 		-t deb \
 		-n $(NAME) \
 		--version $(VERSION) \
 		--iteration 1 \
-		--after-install scripts/after-install.sh \
-		--after-remove scripts/after-remove.sh \
+		--after-install scripts/after-install.ubuntu.sh \
+		--after-remove scripts/after-remove.ubuntu.sh \
 		--depends python3 \
 		--depends libgtk2.0-0 \
 		--depends libgtk-3-0 \
-		-C dist usr/lib64/ usr/share
+		-C dist usr
