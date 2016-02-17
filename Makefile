@@ -1,6 +1,7 @@
 .PHONY: all
 all: dirs build
 
+VALAC ?= valac
 GTK_CLIENTS=build/gtk2/immodules/im-bogo.so build/gtk3/immodules/im-bogo.so
 
 .PHONY: build
@@ -8,7 +9,7 @@ build: $(GTK_CLIENTS) build/server
 	ln -sf $(PWD)/bogo-python build/bogo-python
 
 $(GTK_CLIENTS): build/gtk%/immodules/im-bogo.so : src/main.vala src/module.vala
-	valac -o $@ $^ --vapi=build/im-bogo.vapi --library=im-bogo --pkg=gtk+-$*.0 -X -fPIC -X -shared
+	$(VALAC) -o $@ $^ --vapi=build/im-bogo.vapi --library=im-bogo --pkg=gtk+-$*.0 -X -fPIC -X -shared
 	sed -e "s;%PWD%;$(PWD);g" -e "s;%GTK_VERSION%;$*;g" src/immodules.cache.in > build/gtk$*/immodules.cache
 
 build/server: src/server.vala
