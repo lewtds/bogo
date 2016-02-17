@@ -7,15 +7,15 @@ GTK_CLIENTS=build/gtk2/immodules/im-bogo.so build/gtk3/immodules/im-bogo.so
 build: $(GTK_CLIENTS) build/server
 	ln -sf $(PWD)/bogo-python build/bogo-python
 
-$(GTK_CLIENTS): build/gtk%/immodules/im-bogo.so : main.vala module.vala
+$(GTK_CLIENTS): build/gtk%/immodules/im-bogo.so : src/main.vala src/module.vala
 	valac -o $@ $^ --vapi=build/im-bogo.vapi --library=im-bogo --pkg=gtk+-$*.0 -X -fPIC -X -shared
-	sed -e "s;%PWD%;$(PWD);g" -e "s;%GTK_VERSION%;$*;g" immodules.cache.in > build/gtk$*/immodules.cache
+	sed -e "s;%PWD%;$(PWD);g" -e "s;%GTK_VERSION%;$*;g" src/immodules.cache.in > build/gtk$*/immodules.cache
 
-build/server: server.vala
-	valac -o $@ $^ --pkg=gdk-3.0 --pkg=python3 --vapidir=.
+build/server: src/server.vala
+	valac -o $@ $^ --pkg=gdk-3.0 --pkg=python3 --vapidir=src
 
 .PHONY: test
-test: main.vala tests/test.vala
+test: src/main.vala tests/test.vala
 	valac $^ --pkg=gtk+-3.0 -o build/test
 	build/test
 	python2 tests/gui.py
@@ -40,7 +40,7 @@ install: build
 	install -D build/server $(DESTDIR)/usr/lib64/bogo/bogo-daemon
 	mkdir -p $(DESTDIR)/usr/lib64/bogo/bogo-python
 	cp -R bogo-python $(DESTDIR)/usr/lib64/bogo/bogo-python
-	install -D org.bogo.service $(DESTDIR)/usr/share/dbus-1/services/org.bogo.service
+	install -D src/org.bogo.service $(DESTDIR)/usr/share/dbus-1/services/org.bogo.service
 
 .PHONY: uninstall
 uninstall:
